@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en"> <!-- Додано мову документа (українська) -->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EauTrack</title>
+    <link rel="stylesheet" href="styles.css?v=1.0.1">
+</head>
+<body>
+
+    <header>
+        <div class="logo" onclick="window.location.href='index.html'">EauTrack</div>
+        <div class="header-right">
+            <div class="burger-menu" onclick="toggleSidebar()" aria-label="Toggle sidebar">☰</div> 
+            <div class="header-right">
+    <div class="notification-icon" onclick="toggleNotifications()">
+        <img src="image/bell.png" alt="Notifications" class="bell-icon">
+        <span class="notification-count" id="notif-count">3</span>
+    </div>
+    <div class="profile" onclick="toggleProfileMenu()">
+        <img src="image/ava.JPG" alt="Victor Piznak" class="profile-avatar">
+        <span class="profile-name">Victor Piznak</span>
+    </div>
+</div>
+        </div>
+    </header>
+
+    <!-- Вікно з останніми повідомленнями -->
+    <div class="notification-preview" id="notification-preview">
+        <h3>Last Notifications</h3>
+        <ul>
+            <li>
+                <img src="image/student1.jpg" alt="Student 1" class="notification-avatar">
+                <span class="notification-text">Denis Lupak: New message</span>
+            </li>
+            <li>
+                <img src="image/student2.jpg" alt="Student 2" class="notification-avatar">
+                <span class="notification-text">Bogdan Kruk: Assignment submitted</span>
+            </li>
+            <li>
+                <img src="image/student3.jpg" alt="Student 3" class="notification-avatar">
+                <span class="notification-text">Adriano Celentano: System update</span>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Модальне вікно для профілю та виходу -->
+    <div id="profile-menu" class="profile-menu">
+        <button onclick="window.location.href='profile.html'">Profile</button>
+        <button onclick="logout()">Log Out</button>
+    </div>
+
+    <div class="sidebar">
+        <ul class="menu">
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="students.html">Students</a></li>
+            <li><a href="tasks.html">Tasks</a></li>
+        </ul>
+    </div>
+
+    <main class="main-content">
+        <h1>Student Management System</h1> <!-- Додано заголовок першого рівня -->
+        <section class="student-list">
+            <h2>Students</h2>
+            <div class="actions">
+                <button id="add-student">+ Add Student</button>
+                <button id="delete-selected" class="disabled" onclick="confirmDeleteSelected()">
+                    <img src="image/trash-icon.png" alt="Delete Selected" class="trash-icon">
+                </button>
+            </div>
+            <table id="students-table">
+                <thead>
+                    <tr>
+                        <th>
+                            <input type="checkbox" id="select-all" onclick="toggleSelectAll()" aria-label="Select all"> <!-- Додано aria-label -->
+                        </th>
+                        <th>Group</th>
+                        <th>Name</th>
+                        <th>Surname</th>
+                        <th>Sex</th>
+                        <th>Date of Birth</th>
+                        <th>Status</th>
+                        <th>Options</th>
+                    </tr>
+                </thead>
+                <tbody id="students-table-body">
+                </tbody>
+            </table>
+            <!-- Пагінація -->
+            <div class="pagination">
+                <button onclick="changePage(-1)">&lt;</button>
+                <span id="page-indicator">1</span>
+                <button onclick="changePage(1)">&gt;</button>
+            </div>
+        </section>
+    </main>
+
+    <!-- Модальне вікно для підтвердження видалення вибраних студентів -->
+    <div id="delete-selected-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>Delete Selected Students</h2>
+            <p>Are you sure you want to delete the selected students?</p>
+            <div class="modal-buttons">
+                <button onclick="deleteSelectedStudents()">Yes, Delete</button>
+                <button onclick="closeModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальне вікно для додавання студента -->
+    <div id="add-student-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>Add Student</h2>
+            <form id="add-student-form">
+                <label for="group">Group:</label>
+                <select id="group" name="group">
+                    <option value="PZ-21">PZ-21</option>
+                    <option value="PZ-22">PZ-22</option>
+                    <option value="PZ-23">PZ-23</option>
+                    <option value="PZ-24">PZ-24</option>
+                    <option value="PZ-25">PZ-25</option>
+                    <option value="PZ-26">PZ-26</option>
+                </select>
+
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" required>
+
+                <label for="surname">Surname:</label>
+                <input type="text" id="surname" name="surname" required>
+
+                <label for="sex">Sex:</label>
+                <select id="sex" name="sex">
+                    <option value="M">Male</option>
+                    <option value="F">Female</option>
+                </select>
+
+                <label for="birthday">Date of Birth:</label>
+                <input type="date" id="birthday" name="birthday" required>
+
+                <button type="submit">Add Student</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Модальне вікно для редагування студента -->
+    <div id="edit-student-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>Edit Student</h2>
+            <form id="edit-student-form">
+                <label for="edit-group">Group:</label>
+                <select id="edit-group" name="group">
+                    <option value="PZ-21">PZ-21</option>
+                    <option value="PZ-22">PZ-22</option>
+                    <option value="PZ-23">PZ-23</option>
+                    <option value="PZ-24">PZ-24</option>
+                    <option value="PZ-25">PZ-25</option>
+                    <option value="PZ-26">PZ-26</option>
+                </select>
+
+                <label for="edit-name">Name:</label>
+                <input type="text" id="edit-name" name="name" required>
+
+                <label for="edit-surname">Surname:</label>
+                <input type="text" id="edit-surname" name="surname" required>
+
+                <label for="edit-sex">Sex:</label>
+                <select id="edit-sex" name="sex">
+                    <option value="M">Male</option>
+                    <option value="F">Female</option>
+                </select>
+
+                <label for="edit-birthday">Date of Birth:</label>
+                <input type="date" id="edit-birthday" name="birthday" required>
+
+                <button type="submit">Save Changes</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Модальне вікно для підтвердження видалення студента -->
+    <div id="delete-student-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>Delete a student</h2>
+            <p id="delete-confirmation-text">You really want to delete a student <strong id="student-name-to-delete"></strong>?</p>
+            <div class="modal-buttons">
+                <button onclick="confirmDelete()">ОК</button>
+                <button onclick="closeModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
